@@ -26,4 +26,21 @@ class Question < ApplicationRecord
     through: :answer_choices,
     source: :responses
     
+  def results_n_plus_1
+    res = Hash.new(0)
+    self.responses.each do |response|
+      res[response.answer_choice.text] += 1
+    end
+    res
+  end
+  
+  def results
+    res = Hash.new(0)
+    with_answers = self.responses.includes(:answer_choice)
+    with_answers.each do |response|
+      res[response.answer_choice.text] += 1
+    end
+    res
+  end
+    
 end
