@@ -10,7 +10,7 @@
 #
 
 class Response < ApplicationRecord
-  validate :not_duplicate_response
+  validate :not_duplicate_response, :cannot_respond_to_own_poll
   
   belongs_to :respondent,
     primary_key: :id,
@@ -39,4 +39,16 @@ class Response < ApplicationRecord
       errors[:base] << 'This user has already responded.'
     end
   end
+  
+  def respondent_is_author?
+    self.question.poll.author.id == self.responder_id
+  end
+  
+  def cannot_respond_to_own_poll
+    if respondent_is_author?
+      errors[:base] << 'The respondent created this poll.'
+    end
+  end
+  
+  
 end
